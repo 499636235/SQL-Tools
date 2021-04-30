@@ -1,25 +1,25 @@
 --堡垒机账号密码
 zkrxuechengbin
-Dw@12345678
+Dw@123456789
 
 --对比表存过
 SELECT * FROM TABLE_KEYS where TABLE_NAME = 'TTTTTTTTTTTT'||'_DIFF';
 call USER_DIFF.SP_TABLE_DIFF('TTTTTTTTTTTT','USERA','USERB','USER_DIFF');
 call user_diff.SP_TABLE_DIFF_DETAIL('TTTTTTTTTTTT'||'_DIFF');
-select * from USER_DIFF.RESULT_DIFF where TARGET_NAME = 'TTTTTTTTTTTT'||'_DIFF';
-select * from USER_DIFF.RESULT_DIFF_DETAIL where TARGET_NAME = 'TTTTTTTTTTTT'||'_DIFF';
-select * from USER_DIFF.TABLE_DIFF_DETAIL where table_name = 'TTTTTTTTTTTT'||'_DIFF';
+select * from USER_DIFF.RESULT_DIFF where TARGET_NAME = 'TTTTTTTTTTTT'||'_DIFF' order by id desc;
+select * from USER_DIFF.RESULT_DIFF_DETAIL where TARGET_NAME = 'TTTTTTTTTTTT'||'_DIFF' order by id desc;
+select * from USER_DIFF.TABLE_DIFF_DETAIL where table_name = 'TTTTTTTTTTTT'||'_DIFF' order by DIFF_NUM desc;
 
 --表名过长情况 对比表存过
 SELECT * FROM TABLE_KEYS where TABLE_NAME = 'TTTTTTTTTTTT'||'_D';
 call USER_DIFF.SP_TABLE_D('TTTTTTTTTTTT','USERA','USERB','USER_DIFF');
 call user_diff.SP_TABLE_DIFF_DETAIL('TTTTTTTTTTTT'||'_D');
-select * from USER_DIFF.RESULT_DIFF where TARGET_NAME = 'TTTTTTTTTTTT'||'_D';
-select * from USER_DIFF.RESULT_DIFF_DETAIL where TARGET_NAME = 'TTTTTTTTTTTT'||'_D';
-select * from USER_DIFF.TABLE_DIFF_DETAIL where table_name = 'TTTTTTTTTTTT'||'_D';
+select * from USER_DIFF.RESULT_DIFF where TARGET_NAME = 'TTTTTTTTTTTT'||'_D' order by id desc;
+select * from USER_DIFF.RESULT_DIFF_DETAIL where TARGET_NAME = 'TTTTTTTTTTTT'||'_D' order by id desc;
+select * from USER_DIFF.TABLE_DIFF_DETAIL where table_name = 'TTTTTTTTTTTT'||'_D' order by DIFF_NUM desc;
 
-
-
+--如果格式不一样可以手动统一格式!!!
+update userb.BALY_LAGRPCONTRESULTLIST set GRADENAME = substr(GRADENAME,instr(GRADENAME,'-')+1,50);
 
 --查询各表的失败行数
 SELECT TARGET_NAME,ROWS_OF_SUCC,SYN_TIME FROM USER_DIFF.RESULT_DIFF ORDER BY ROWS_OF_SUCC;
@@ -84,6 +84,16 @@ KEYS VARCHAR2(255)			--主键
 INSERT INTO TABLE_KEYS VALUES('ALY_LLTAXCLMLIST_DIFF','CLMNO');
 COMMIT;
 SELECT * FROM TABLE_KEYS where TABLE_NAME = 'ALY_LLTAXCLMLIST_DIFF';
+
+
+--空间不足时查看表占用空间
+SELECT OWNER,SEGMENT_NAME, SUM(BYTES) / 1024 / 1024 AS M
+  FROM DBA_SEGMENTS
+ WHERE OWNER IN( 'USERA','USERB')
+ GROUP BY SEGMENT_NAME,OWNER
+ ORDER BY M DESC;
+
+
 
 
 --多行对比日志 建表语句-----------------------------------------------------
