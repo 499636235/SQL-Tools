@@ -1,6 +1,11 @@
 --堡垒机账号密码
 zkrxuechengbin
-Dw@123456789
+Dw@1234567890
+
+--USER_A和USER_DIFF数据库密码（手动改过）（USERA的原密码是usera123）
+Dw@12345678
+--USERB的数据库密码
+userb123
 
 --对比表存过
 SELECT * FROM TABLE_KEYS where TABLE_NAME = 'TTTTTTTTTTTT'||'_DIFF';
@@ -86,13 +91,25 @@ COMMIT;
 SELECT * FROM TABLE_KEYS where TABLE_NAME = 'ALY_LLTAXCLMLIST_DIFF';
 
 
---空间不足时查看表占用空间
+--空间不足时查看表占用空间1
 SELECT OWNER,SEGMENT_NAME, SUM(BYTES) / 1024 / 1024 AS M
   FROM DBA_SEGMENTS
  WHERE OWNER IN( 'USERA','USERB')
  GROUP BY SEGMENT_NAME,OWNER
  ORDER BY M DESC;
-
+ 
+--空间不足时查看表占用空间2
+select df.tablespace_name "表空间名",
+       totalspace "总空间M",
+       freespace "剩余空间M",
+       round((1 - freespace / totalspace) * 100, 2) "使用率%"
+  from (select tablespace_name, round(sum(bytes) / 1024 / 1024) totalspace
+          from dba_data_files
+         group by tablespace_name) df,
+       (select tablespace_name, round(sum(bytes) / 1024 / 1024) freespace
+          from dba_free_space
+         group by tablespace_name) fs
+ where df.tablespace_name = fs.tablespace_name;
 
 
 
